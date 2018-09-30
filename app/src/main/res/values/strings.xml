@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Apprender</string>
+    <string name="titulo">Titulo</string>
+    <string name="insira_o_texto_aqui">Insira o texto aqui</string>
+</resources>
