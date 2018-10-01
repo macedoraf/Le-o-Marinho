@@ -18,7 +18,7 @@ import apprender.fiap.com.br.apprender.service.AppHeadService;
 import apprender.fiap.com.br.apprender.ui.fragment.AdicionarNotaFragment;
 import apprender.fiap.com.br.apprender.ui.fragment.ListaDeNotasFragment;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     /**
      * Container que recebera as telas da aplicação
      */
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity  {
         inicializaComponentes();
         configuraBarraDeFerramentas();
         carregaViewDeListagem();
-        initializeView();
+
     }
 
     private void verificaPermissoes() {
@@ -45,9 +45,14 @@ public class MainActivity extends AppCompatActivity  {
             //to grant the permission.
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
-            this.startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+                this.startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
         } else {
-            initializeView();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Settings.canDrawOverlays(this))
+                    initializeView();
+            } else {
+                initializeView();
+            }
         }
     }
 
@@ -56,15 +61,15 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void configuraBarraDeFerramentas() {
-    setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
 
-    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onBackPressed();
-        }
-    });
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
     }
 
@@ -80,20 +85,20 @@ public class MainActivity extends AppCompatActivity  {
     /**
      * Carrega a tela de listagem de notas
      */
-    public void carregaViewDeListagem(){
+    public void carregaViewDeListagem() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(frame.getId(),new ListaDeNotasFragment());
+        fragmentTransaction.replace(frame.getId(), new ListaDeNotasFragment());
         fragmentTransaction.commit();
     }
 
     /**
      * Carrega a tela de listagem de notas
      */
-    public void carregaViewDeAdicionarNotas(Bundle bundle){
+    public void carregaViewDeAdicionarNotas(Bundle bundle) {
         final AdicionarNotaFragment adicionarNotaFragment = new AdicionarNotaFragment();
         adicionarNotaFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(frame.getId(),adicionarNotaFragment);
+        fragmentTransaction.replace(frame.getId(), adicionarNotaFragment);
         fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();

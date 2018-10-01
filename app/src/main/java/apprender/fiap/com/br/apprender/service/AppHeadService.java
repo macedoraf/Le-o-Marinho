@@ -3,6 +3,7 @@ package apprender.fiap.com.br.apprender.service;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -27,7 +28,7 @@ public class AppHeadService extends Service {
     }
 
 
-    public void finalizar(){
+    public void finalizar() {
         this.onDestroy();
     }
 
@@ -53,16 +54,33 @@ public class AppHeadService extends Service {
         params.y = 100;
 
         //Add the view to the window
+
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
         mWindowManager.addView(mChatHeadView, params);
 
         final ImageView close_btn = mChatHeadView.findViewById(R.id.close_btn);
+        final ImageView open_btn = mChatHeadView.findViewById(R.id.open_btn);
+
+        open_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AppHeadService.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+
+                //close the service and remove the chat heads
+                stopSelf();
+            }
+        });
+
         close_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AppHeadService.this.finalizar();
             }
         });
+
         final ImageView chatHeadImage = (ImageView) mChatHeadView.findViewById(R.id.chat_head_profile_iv);
         chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
             private int lastAction;
@@ -90,15 +108,6 @@ public class AppHeadService extends Service {
                         //As we implemented on touch listener with ACTION_MOVE,
                         //we have to check if the previous action was ACTION_DOWN
                         //to identify if the user clicked the view or not.
-                        if (lastAction == MotionEvent.ACTION_DOWN) {
-                            //Open the chat conversation click.
-                            Intent intent = new Intent(AppHeadService.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-
-                            //close the service and remove the chat heads
-                            stopSelf();
-                        }
                         lastAction = event.getAction();
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -110,15 +119,12 @@ public class AppHeadService extends Service {
                         mWindowManager.updateViewLayout(mChatHeadView, params);
                         lastAction = event.getAction();
                         return true;
+
                 }
                 return false;
             }
         });
     }
-
-
-
-
 
 
     @Override
